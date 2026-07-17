@@ -44,3 +44,7 @@ temp/
 *.ai
 *.sketch
 *.fig
+
+# Accidental local design docs, not part of the site
+/design-system.md
+/wacky-yugto-portfolio.md
