@@ -1,0 +1,857 @@
+/* ==========================================================================
+   SECTIONS · composition-level layout.
+   Editorial (Focus-leaning) = hero, contact.
+   Structural (MIAD-leaning) = skills, work, experience, education.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   HERO · Composition A — Editorial.
+   Drift gradient. Centred italic display word as the centre of gravity.
+   Metadata strip top, body caps + identifier bottom. Portrait cropped into
+   a band, overlapping the word.
+   -------------------------------------------------------------------------- */
+
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  padding: calc(var(--gutter) * 2.6) var(--gutter) var(--gutter);
+  background: var(--drift);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.hero__meta {
+  position: relative;
+  z-index: 3;
+}
+
+/* The stage holds the word and the portrait band, stacked. */
+.hero__stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+}
+
+/* Portrait band — the figure cropped into a vertical plate, centred, with the
+   word's two lines crossing it top and bottom. Kept deliberately narrower than
+   the word so the name still reads on both sides of the figure. */
+.hero__band {
+  position: absolute;
+  z-index: 3; /* above both word lines — see .hero__line-mask--front */
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  width: min(32vw, 300px);
+  height: min(68svh, 580px);
+  /* Never taller than the stage — on a short laptop the svh value alone would
+     let the plate bleed up into the metadata strip. */
+  max-height: 100%;
+  pointer-events: none;
+}
+
+.hero__canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Static fallback: shown when WebGL is unavailable or motion is reduced. */
+.hero__fallback {
+  position: absolute;
+  inset: 0;
+}
+
+.hero__fallback img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 18%;
+}
+
+.hero.has-webgl .hero__fallback {
+  display: none;
+}
+
+/* The word. Two lines pushed to the top and bottom of the stage so the figure
+   sits between them — rather than stacked at the centre, where the band would
+   cover both at once and the name would never read. */
+.hero__word {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  text-align: center;
+  color: var(--c-type);
+}
+
+/* Each line gets its own mask so the entrance can slide it up from nothing.
+   The padding is load-bearing, not spacing: line-height 0.8 makes the line box
+   shorter than the glyphs, so overflow:hidden clips Fraunces italic's long
+   descenders (the y tails, the J) clean off. This buys back the overflow. */
+.hero__line-mask {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  padding-block: 0.1em 0.3em;
+}
+
+/* Both lines pass behind the figure. An earlier pass put this one in front on
+   multiply, but multiplying near-black type over a near-black figure just
+   erased the letter — occlusion reads as depth; a vanished glyph reads as a
+   typo. The plate owns the middle; the letters run behind it. */
+.hero__line-mask--front {
+  position: relative;
+}
+
+/* Letters spread edge-to-edge. Capped so the gaps stay a deliberate interval
+   rather than five glyphs marooned at the screen's corners. */
+.hero__word-line {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: min(94vw, 1150px);
+  margin-inline: auto;
+  font-size: var(--fs-h1);
+  line-height: 0.8;
+  white-space: nowrap;
+}
+
+.hero__char {
+  display: block;
+}
+
+.hero__word-line em {
+  font-style: italic;
+}
+
+.hero__sub {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--gutter);
+}
+
+.hero__sub-copy {
+  max-width: 46ch;
+  color: var(--c-type-soft);
+}
+
+.hero__scroll {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.hero__scroll .arrow {
+  font-size: 1.5rem;
+  animation: nudge 2.4s var(--ease-smooth) infinite;
+}
+
+@keyframes nudge {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(0.3em);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__scroll .arrow {
+    animation: none;
+  }
+}
+
+/* Narrow screens abandon the overlap composition entirely.
+   It depends on the name out-measuring the figure horizontally, and at 390px
+   there is no width to spend: spread the letters and the figure covers three
+   of five; don't spread them and it covers all five. So the stage unstacks —
+   name above, plate below, nothing overlapping anything. */
+@media (max-width: 760px) {
+  .hero {
+    min-height: auto; /* let it grow past the fold rather than crush the plate */
+    padding-top: calc(var(--gutter) * 3.4);
+  }
+
+  .hero__stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.25rem, 1rem + 2vw, 2rem);
+    padding-block: 1.5rem;
+  }
+
+  /* Out of absolute positioning and back into flow. */
+  .hero__word {
+    position: static;
+    display: block;
+  }
+
+  .hero__word-line {
+    justify-content: center; /* no edge-to-edge spread down here */
+    max-width: 100%;
+    font-size: clamp(3.25rem, 1rem + 16vw, 6rem);
+  }
+
+  .hero__band {
+    position: static;
+    translate: none;
+    width: min(72vw, 280px);
+    height: 46svh;
+    min-height: 300px;
+  }
+
+  .hero__sub {
+    align-items: flex-start;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   ABOUT · Editorial/structural hybrid.
+   -------------------------------------------------------------------------- */
+
+.about__grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--gutter);
+  align-items: start;
+}
+
+.about__num {
+  grid-column: 1 / 3;
+}
+
+.about__body {
+  grid-column: 3 / 10;
+  display: grid;
+  gap: clamp(1.25rem, 1rem + 1vw, 2rem);
+}
+
+.about__statement {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: var(--fs-h2);
+  line-height: 1.02;
+  letter-spacing: var(--tr-display);
+  color: var(--c-type);
+}
+
+.about__statement em {
+  color: var(--c-signal);
+  font-style: italic;
+}
+
+.about__narrative {
+  max-width: 62ch;
+  color: var(--c-type-soft);
+}
+
+.about__narrative + .about__narrative {
+  margin-top: 1rem;
+}
+
+.about__aside {
+  grid-column: 10 / 13;
+  display: grid;
+  gap: 1.5rem;
+  padding-top: 0.5rem;
+  border-top: var(--rule) solid var(--c-rule);
+}
+
+@media (max-width: 900px) {
+  .about__num,
+  .about__body,
+  .about__aside {
+    grid-column: 1 / -1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   SKILLS · Composition B — Structural.
+   Massive Anton words stacked in rows separated by coral rules. Notes set in
+   mono align right with arrows pointing back to the words.
+   -------------------------------------------------------------------------- */
+
+.skills__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--gutter);
+  align-items: center;
+  padding-block: clamp(1.25rem, 1rem + 1.5vw, 2.25rem);
+  border-bottom: var(--rule) solid var(--c-signal-dim);
+  transition: background-color var(--dur-mid) var(--ease-smooth);
+}
+
+.skills__row:first-child {
+  border-top: var(--rule) solid var(--c-signal-dim);
+}
+
+.skills__row:hover {
+  background-color: rgba(232, 151, 137, 0.04);
+}
+
+.skills__word {
+  font-size: clamp(1.75rem, 1rem + 4vw, 4rem);
+  color: var(--c-type);
+  line-height: 0.9;
+  transition: color var(--dur-mid) var(--ease-smooth);
+}
+
+.skills__row:hover .skills__word {
+  color: var(--c-signal);
+}
+
+.skills__notes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.4rem 0.9rem;
+  text-align: right;
+}
+
+.skills__note {
+  font-size: var(--fs-mono);
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+  color: var(--c-type-dim);
+  white-space: nowrap;
+}
+
+.skills__note::before {
+  content: "↖ ";
+  color: var(--c-signal);
+}
+
+@media (max-width: 760px) {
+  .skills__row {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .skills__notes {
+    justify-content: flex-start;
+    text-align: left;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   WORK · Structural. Filter bar + gallery grid.
+   The client's artwork renders TRUE — no duotone, no tint, no grayscale.
+   The only treatment is scale and a coral hairline.
+   -------------------------------------------------------------------------- */
+
+.work__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--gutter);
+  margin-bottom: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+}
+
+.work__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.work__filter {
+  padding: 0.5rem 1rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+  color: var(--c-type-dim);
+  border: var(--rule) solid var(--c-rule);
+  border-radius: 100px;
+  transition:
+    color var(--dur-fast) var(--ease-smooth),
+    border-color var(--dur-fast) var(--ease-smooth),
+    background-color var(--dur-fast) var(--ease-smooth);
+}
+
+.work__filter:hover {
+  color: var(--c-type);
+  border-color: var(--c-type-dim);
+}
+
+.work__filter[aria-pressed="true"] {
+  background: var(--c-signal);
+  border-color: var(--c-signal);
+  color: var(--char);
+}
+
+.work__count {
+  font-variant-numeric: tabular-nums;
+}
+
+.work__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+  gap: clamp(1rem, 0.5rem + 1.5vw, 2rem);
+}
+
+.work__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  text-align: left;
+  padding: 0;
+  transition:
+    opacity var(--dur-mid) var(--ease-smooth),
+    transform var(--dur-mid) var(--ease-signature);
+}
+
+.work__item[hidden] {
+  display: none;
+}
+
+.work__thumb {
+  position: relative;
+  overflow: hidden;
+  background: var(--char);
+  border: var(--rule) solid var(--c-rule);
+  aspect-ratio: 1 / 1;
+}
+
+.work__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-slow) var(--ease-signature);
+}
+
+.work__item:hover .work__thumb img,
+.work__item:focus-visible .work__thumb img {
+  transform: scale(1.045);
+}
+
+.work__item:hover .work__thumb,
+.work__item:focus-visible .work__thumb {
+  border-color: var(--c-signal);
+}
+
+/* Corner identifier on the thumb — print-callout, not a badge. */
+.work__idx {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.6rem;
+  z-index: 2;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: var(--bone);
+  mix-blend-mode: difference;
+  font-variant-numeric: tabular-nums;
+}
+
+.work__meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.work__title {
+  font-family: var(--font-headline);
+  font-size: 1.35rem;
+  text-transform: uppercase;
+  letter-spacing: var(--tr-headline);
+  color: var(--c-type);
+  line-height: 1;
+  transition: color var(--dur-fast) var(--ease-smooth);
+}
+
+.work__item:hover .work__title {
+  color: var(--c-signal);
+}
+
+.work__disc {
+  font-size: var(--fs-mono);
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+  color: var(--c-type-dim);
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   LIGHTBOX
+   -------------------------------------------------------------------------- */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-lightbox);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: var(--gutter);
+  padding: var(--gutter);
+  background: var(--char-92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--dur-mid) var(--ease-smooth),
+    visibility var(--dur-mid) var(--ease-smooth);
+}
+
+.lightbox.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.lightbox__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gutter);
+  padding-bottom: 0.75rem;
+  border-bottom: var(--rule) solid var(--c-rule);
+}
+
+.lightbox__close {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--fs-mono);
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+  color: var(--c-type);
+}
+
+.lightbox__close:hover {
+  color: var(--c-signal);
+}
+
+.lightbox__body {
+  display: grid;
+  grid-template-columns: 1fr minmax(240px, 340px);
+  gap: clamp(1.5rem, 1rem + 3vw, 3.5rem);
+  min-height: 0;
+  align-items: center;
+}
+
+.lightbox__figure {
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  height: 100%;
+}
+
+.lightbox__figure img {
+  max-width: 100%;
+  max-height: 78svh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border: var(--rule) solid var(--c-rule);
+}
+
+.lightbox__panel {
+  display: grid;
+  gap: 1.25rem;
+  align-content: center;
+}
+
+.lightbox__title {
+  font-family: var(--font-headline);
+  font-size: var(--fs-h3);
+  text-transform: uppercase;
+  letter-spacing: var(--tr-headline);
+  line-height: 0.95;
+  color: var(--c-type);
+}
+
+.lightbox__note {
+  color: var(--c-type-soft);
+  font-size: var(--fs-body);
+}
+
+.lightbox__specs {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.lightbox__spec {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: var(--rule) solid var(--c-rule-soft);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+}
+
+.lightbox__spec dt {
+  color: var(--c-type-dim);
+}
+
+.lightbox__spec dd {
+  color: var(--c-type);
+  text-align: right;
+}
+
+.lightbox__nav {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.lightbox__step {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: var(--rule) solid var(--c-rule);
+  border-radius: 50%;
+  font-family: var(--font-headline);
+  font-size: 1.25rem;
+  color: var(--c-type);
+  transition:
+    border-color var(--dur-fast) var(--ease-smooth),
+    color var(--dur-fast) var(--ease-smooth);
+}
+
+.lightbox__step:hover {
+  border-color: var(--c-signal);
+  color: var(--c-signal);
+}
+
+@media (max-width: 900px) {
+  .lightbox__body {
+    grid-template-columns: 1fr;
+    align-items: start;
+    overflow-y: auto;
+  }
+
+  .lightbox__figure img {
+    max-height: 46svh;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   TIMELINE · experience + education. Structural rows.
+   -------------------------------------------------------------------------- */
+
+.timeline__row {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr) minmax(0, 1.6fr);
+  gap: var(--gutter);
+  padding-block: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  border-bottom: var(--rule) solid var(--c-rule);
+}
+
+.timeline__row:first-child {
+  border-top: var(--rule) solid var(--c-rule);
+}
+
+.timeline__period {
+  font-size: var(--fs-mono);
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+  color: var(--c-signal);
+  font-variant-numeric: tabular-nums;
+}
+
+.timeline__role {
+  font-family: var(--font-headline);
+  font-size: clamp(1.25rem, 1rem + 1.2vw, 2rem);
+  text-transform: uppercase;
+  letter-spacing: var(--tr-headline);
+  line-height: 0.95;
+  color: var(--c-type);
+}
+
+.timeline__org {
+  margin-top: 0.4rem;
+  font-size: var(--fs-mono);
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+  color: var(--c-type-dim);
+}
+
+.timeline__points {
+  display: grid;
+  gap: 0.7rem;
+  color: var(--c-type-soft);
+  font-size: var(--fs-body);
+  max-width: 60ch;
+}
+
+.timeline__point {
+  display: flex;
+  gap: 0.7rem;
+  line-height: 1.5;
+}
+
+.timeline__point::before {
+  content: "↘";
+  flex-shrink: 0;
+  color: var(--c-signal);
+  font-family: var(--font-headline);
+  line-height: 1.4;
+}
+
+.timeline--edu .timeline__row {
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 2fr) minmax(0, 1fr);
+  align-items: baseline;
+}
+
+.timeline__status {
+  font-size: var(--fs-mono);
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+  color: var(--c-type-dim);
+  text-align: right;
+}
+
+@media (max-width: 860px) {
+  .timeline__row,
+  .timeline--edu .timeline__row {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .timeline__status {
+    text-align: left;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   CONTACT · Editorial close. Drift returns to bookend the page.
+   -------------------------------------------------------------------------- */
+
+.contact {
+  position: relative;
+  background: var(--drift);
+  overflow: hidden;
+}
+
+.contact__grid {
+  display: grid;
+  gap: clamp(2rem, 1rem + 4vw, 4rem);
+}
+
+.contact__word {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(3rem, 1rem + 11vw, 11rem);
+  line-height: 0.85;
+  letter-spacing: var(--tr-display);
+  color: var(--c-type);
+  text-align: center;
+}
+
+/* --- Primary CTA · the email ---------------------------------------------- */
+
+.contact__cta {
+  display: flex;
+  justify-content: center;
+}
+
+/* Anton, matching .link-big in the channels below — the block is already
+   display + headline + mono, so this introduces no new voice. Uppercasing an
+   address is safe: the local part is case-insensitive in practice. */
+.contact__email {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15em;
+  font-family: var(--font-headline);
+  font-size: clamp(1.4rem, 0.75rem + 3.2vw, 4.25rem);
+  text-transform: uppercase;
+  letter-spacing: var(--tr-headline);
+  line-height: 1;
+  color: var(--c-type);
+  padding-bottom: 0.14em;
+  border-bottom: 2px solid var(--c-signal-dim);
+  overflow-wrap: anywhere;
+  transition:
+    color var(--dur-mid) var(--ease-smooth),
+    border-color var(--dur-mid) var(--ease-smooth);
+}
+
+.contact__email:hover {
+  color: var(--c-signal);
+  border-color: var(--c-signal);
+}
+
+.contact__email .arrow {
+  font-size: 0.65em;
+}
+
+/* --- Channels -------------------------------------------------------------- */
+
+.contact__channels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: var(--gutter);
+  padding-top: 1.5rem;
+  border-top: var(--rule) solid var(--c-rule);
+}
+
+.contact__channel {
+  display: grid;
+  gap: 0.6rem;
+  align-content: start;
+}
+
+/* --fs-h2 is a display size — in a 340px column it wraps the phone number
+   across two lines. The channel values want headline voice at column scale. */
+.contact__channel .link-big {
+  font-size: clamp(1.5rem, 1rem + 1.6vw, 2.5rem);
+}
+
+/* Socials carry the same Anton weight as their neighbouring columns; set in
+   mono they read as a footnote next to OLONGAPO CITY and FREELANCE.
+   justify-self keeps the rule hugging the word — grid items stretch. */
+.contact__social {
+  justify-self: start;
+  padding-bottom: 0.2rem;
+  border-bottom: var(--rule) solid var(--c-rule);
+  transition:
+    color var(--dur-mid) var(--ease-smooth),
+    border-color var(--dur-mid) var(--ease-smooth);
+}
+
+.contact__social:hover {
+  border-color: var(--c-signal);
+}
+
+.contact__social .arrow {
+  font-size: 0.6em;
+}
+
+.contact__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--gutter);
+  padding-top: clamp(2rem, 1rem + 3vw, 3.5rem);
+}
+
+.contact__colophon {
+  max-width: 40ch;
+  font-size: var(--fs-mono);
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+  color: var(--c-type-dim);
+  line-height: 1.7;
+}

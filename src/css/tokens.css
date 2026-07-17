@@ -1,0 +1,98 @@
+/* ==========================================================================
+   TOKENS · Sediment 01
+   The single source of truth. Nothing below this file invents a value.
+   ========================================================================== */
+
+:root {
+  /* --- 01 · Pigment ----------------------------------------------------- */
+  --ink: #0e2a21;
+  --char: #081912;
+  --coral: #e89789;
+  --ember: #d8714c;
+  --moss: #7fa08b;
+  --bone: #f4ede2;
+  --paper: #e9dfc9;
+
+  /* Drift — atmosphere. Hero surfaces and posters only, never UI chrome. */
+  --drift: linear-gradient(155deg, var(--ember) 0%, var(--coral) 48%, var(--moss) 100%);
+
+  /* Derived alphas — for hairlines and scrims that must sit on any surface. */
+  --bone-08: rgba(244, 237, 226, 0.08);
+  --bone-16: rgba(244, 237, 226, 0.16);
+  --bone-32: rgba(244, 237, 226, 0.32);
+  --bone-56: rgba(244, 237, 226, 0.56);
+  --coral-16: rgba(232, 151, 137, 0.16);
+  --coral-32: rgba(232, 151, 137, 0.32);
+  --char-72: rgba(8, 25, 18, 0.72);
+  --char-92: rgba(8, 25, 18, 0.92);
+
+  /* --- Semantic layer ---------------------------------------------------
+     Pigment above is *what the colour is*. These are *what the colour does*.
+     Every primitive references these, never the raw pigment — which is what
+     lets one component sit on ink and on Drift without being rewritten.
+     Flip them with `.invert` (see below), don't redefine pigment. */
+  --c-type: var(--bone);
+  --c-type-soft: var(--paper);
+  --c-type-dim: var(--bone-56);
+  --c-rule: var(--bone-16);
+  --c-rule-soft: var(--bone-08);
+  --c-signal: var(--coral);
+  --c-signal-dim: var(--coral-32);
+
+  /* --- 02 · Voice ------------------------------------------------------- */
+  --font-display: "Fraunces", "Times New Roman", serif;
+  --font-headline: "Anton", "Arial Narrow", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --fs-mono: clamp(0.68rem, 0.6rem + 0.4vw, 0.78rem);
+  --fs-body: clamp(0.95rem, 0.9rem + 0.3vw, 1.05rem);
+  --fs-lead: clamp(1.15rem, 1rem + 0.6vw, 1.5rem);
+  --fs-h3: clamp(1.5rem, 1.2rem + 1.5vw, 2.5rem);
+  --fs-h2: clamp(2.2rem, 1.5rem + 3vw, 4.5rem);
+  --fs-h1: clamp(4rem, 2rem + 12vw, 13rem);
+
+  /* Tracking — mono and uppercase need air; display italic wants tight. */
+  --tr-mono: 0.12em;
+  --tr-label: 0.08em;
+  --tr-display: -0.02em;
+  --tr-headline: -0.005em;
+
+  /* --- 03 · Rhythm ------------------------------------------------------ */
+  --gutter: clamp(1.25rem, 1rem + 2vw, 2.5rem);
+  --rule: 1px;
+  --section-y: clamp(5rem, 3rem + 10vw, 11rem);
+  --maxw: 1680px;
+
+  /* --- Motion ----------------------------------------------------------- */
+  --ease-signature: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-none: none;
+  --ease-loop: linear;
+
+  --dur-fast: 0.24s;
+  --dur-mid: 0.5s;
+  --dur-slow: 0.9s;
+
+  /* --- Chrome ----------------------------------------------------------- */
+  --z-grain: 9000;
+  --z-cursor: 9500;
+  --z-nav: 8000;
+  --z-lightbox: 8500;
+  --z-preloader: 9800;
+}
+
+/* --------------------------------------------------------------------------
+   INVERT · for compositions on a light surface (the Drift hero).
+   Note the signal flip: --coral cannot be the signal on a gradient that is
+   itself part coral — it disappears. On Drift, deep forest is the signal.
+   -------------------------------------------------------------------------- */
+
+.invert {
+  --c-type: #081912;
+  --c-type-soft: #17352a;
+  --c-type-dim: rgba(8, 25, 18, 0.66);
+  --c-rule: rgba(8, 25, 18, 0.24);
+  --c-rule-soft: rgba(8, 25, 18, 0.1);
+  --c-signal: #0e2a21;
+  --c-signal-dim: rgba(14, 42, 33, 0.35);
+}

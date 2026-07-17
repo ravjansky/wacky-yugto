@@ -1,0 +1,36 @@
+{
+  "name": "Wacky Jhay Yugto — Creative Designer",
+  "short_name": "Wacky Jhay",
+  "description": "Portfolio of Wacky Jhay Yugto, creative designer and digital content specialist based in Olongapo City, Philippines.",
+  "icons": [
+    {
+      "src": "web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "theme_color": "#0E2A21",
+  "background_color": "#081912",
+  "display": "standalone",
+  "start_url": "../../../",
+  "scope": "../../../"
+}
