@@ -92,12 +92,13 @@ async function boot() {
   const tl = exit();
 
   if (!reducedMotion) {
-    // Per-letter, not per-line: the letters are already spread, so staggering
-    // them lets the name assemble across the width instead of dropping in as
-    // two slabs. One mask per line still clips them all.
+    // Per-line, not per-letter. Splitting the words into per-char boxes to
+    // stagger them costs the kerning between pairs like "Wa" and "ck", which
+    // at display size reads as a gappy word — the exact problem the diagonal
+    // layout exists to solve. Whole lines keep the kerning.
     tl.from(
-      ".hero__char",
-      { yPercent: 110, duration: 1.15, ease: "expo.out", stagger: { each: 0.045, from: "start" } },
+      "[data-hero-line]",
+      { yPercent: 110, duration: 1.15, ease: "expo.out", stagger: 0.1 },
       "-=0.65"
     )
       .from(

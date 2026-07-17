@@ -95,37 +95,33 @@
 /* Each line gets its own mask so the entrance can slide it up from nothing.
    The padding is load-bearing, not spacing: line-height 0.8 makes the line box
    shorter than the glyphs, so overflow:hidden clips Fraunces italic's long
-   descenders (the y tails, the J) clean off. This buys back the overflow. */
+   descenders (the y tails, the J) clean off — a `y` renders as a `v`.
+
+   font-size MUST live here, not on the line. These em paddings resolve against
+   *this* element, and .hero__word is an <h1> — UA-styled to 2em — so without
+   it the padding computes against 33.6px instead of 208px and reserves ~10px
+   where the descender needs ~50. */
 .hero__line-mask {
   display: block;
-  width: 100%;
-  overflow: hidden;
-  padding-block: 0.1em 0.3em;
-}
-
-/* Both lines pass behind the figure. An earlier pass put this one in front on
-   multiply, but multiplying near-black type over a near-black figure just
-   erased the letter — occlusion reads as depth; a vanished glyph reads as a
-   typo. The plate owns the middle; the letters run behind it. */
-.hero__line-mask--front {
-  position: relative;
-}
-
-/* Letters spread edge-to-edge. Capped so the gaps stay a deliberate interval
-   rather than five glyphs marooned at the screen's corners. */
-.hero__word-line {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  max-width: min(94vw, 1150px);
-  margin-inline: auto;
   font-size: var(--fs-h1);
+  overflow: hidden;
+  padding-block: 0.12em 0.34em;
+}
+
+/* Opposite corners: the diagonal is what keeps both words off the plate. */
+.hero__line-mask--start {
+  align-self: flex-start;
+}
+
+.hero__line-mask--end {
+  align-self: flex-end;
+}
+
+/* One word, normal advance widths, full kerning. Sizing lives on the mask. */
+.hero__word-line {
+  display: block;
   line-height: 0.8;
   white-space: nowrap;
-}
-
-.hero__char {
-  display: block;
 }
 
 .hero__word-line em {
@@ -194,16 +190,21 @@
     padding-block: 1.5rem;
   }
 
-  /* Out of absolute positioning and back into flow. */
+  /* Out of absolute positioning and back into flow. No diagonal down here —
+     there's no width for it, so the two words simply stack and centre. */
   .hero__word {
     position: static;
     display: block;
+    text-align: center;
   }
 
-  .hero__word-line {
-    justify-content: center; /* no edge-to-edge spread down here */
-    max-width: 100%;
+  .hero__line-mask {
     font-size: clamp(3.25rem, 1rem + 16vw, 6rem);
+  }
+
+  .hero__line-mask--start,
+  .hero__line-mask--end {
+    align-self: auto;
   }
 
   .hero__band {

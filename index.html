@@ -149,23 +149,15 @@
         <div class="hero__stage">
           <h1 class="hero__word">
             <span class="sr-only">Wacky Jhay Yugto — Creative Designer and Digital Content Specialist</span>
-            <!-- Letters are spread edge-to-edge rather than set as one word:
-                 a centred 5-letter word is narrower than the portrait plate,
-                 so the figure would sit on top of the middle of the name and
-                 it would never read. Spread, the plate covers one glyph. -->
-            <span class="hero__line-mask" aria-hidden="true">
-              <span class="display hero__word-line" data-hero-line>
-                <span class="hero__char">W</span><span class="hero__char">a</span
-                ><span class="hero__char">c</span><span class="hero__char">k</span
-                ><span class="hero__char">y</span>
-              </span>
+            <!-- Set as whole words with full kerning, not spread letters.
+                 They clear the portrait by being pushed to opposite corners —
+                 Wacky top-left, Yugto bottom-right — so the plate lands in the
+                 space beside each rather than on top of the middle of either. -->
+            <span class="hero__line-mask hero__line-mask--start" aria-hidden="true">
+              <span class="display hero__word-line" data-hero-line>Wacky</span>
             </span>
-            <span class="hero__line-mask hero__line-mask--front" aria-hidden="true">
-              <span class="display hero__word-line" data-hero-line>
-                <span class="hero__char">J</span><span class="hero__char">h</span
-                ><span class="hero__char">a</span><span class="hero__char">y</span
-                ><span class="hero__char">.</span>
-              </span>
+            <span class="hero__line-mask hero__line-mask--end" aria-hidden="true">
+              <span class="display hero__word-line" data-hero-line>Yugto<em>.</em></span>
             </span>
           </h1>
 
